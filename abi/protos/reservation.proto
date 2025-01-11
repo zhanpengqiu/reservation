@@ -3,6 +3,7 @@ package reservation;
 
 import "google/protobuf/timestamp.proto";
 
+//Reservation Status for a given time period
 enum ReservationStatus {
     RESERVATION_STATUS_UNKNOWN = 0;
     RESERVATION_STATUS_PENDING = 1;
@@ -10,6 +11,7 @@ enum ReservationStatus {
     RESERVATION_STATUS_BLOCKED = 3;
 }
 
+// when reservation is updated, record the update time
 enum ReservationUpdateType {
     RESERVATIO_UPDATE_TYPE_UNKNOWN = 0;
     RESERVATIO_UPDATE_TYPE_CREATE = 1;
@@ -17,9 +19,15 @@ enum ReservationUpdateType {
     cargoicaSERVATIO_UPDATE_TYPE_DELETE = 3;
 }
 
+// core reservation object. Contains all the infomation for a reservation
+// if put into ReservationRequest, id should be empty
+// if ListenResponse op is DELETE, onlu id will be populated
 message Reservation {
+    //unique id for the reservation 
     string id = 1;
+    // user if for the reservation
     string user_id = 2;
+    // used for differentation purpose
     ReservationStatus status = 3;
 
     // resource reservation window
@@ -31,6 +39,7 @@ message Reservation {
     string note = 7;
 }
 
+// To make a reservation, send aReservationRequest
 message ReserveRequest {
     Reservation reservation = 1;
 }
@@ -87,10 +96,13 @@ message ListenResponse {
 }
 
 service ReservationService {
+    // make a reservation
     rpc reserve(ReserveRequest) returns (ReserveResponse);
+    // confirm a pending reservation ,if reservation is not pending ,do nothing
     rpc confirm(ConfirmRequest) returns (ConfirmResponse);
     rpc update(UpdateRequest) returns (UpdateResponse);
     rpc cancel(CancelRequest) returns (CancelResponse);
+    // get a reservation by id
     rpc get(GetRequest) returns (GetResponse);
     rpc query(QueryRequest) returns (stream Reservation);
     // another system could monitor newly added/confirmed/cancelled reservations
