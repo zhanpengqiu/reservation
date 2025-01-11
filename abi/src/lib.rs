@@ -1,5 +1,7 @@
-#[allow(clippy::all)]
+#[allow(clippy::all, non_camel_case_types)]
 mod pb;
+
+pub use pb::*;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
