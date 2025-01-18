@@ -1,10 +1,16 @@
+/// core reservation object. Contains all the infomation for a reservation
+/// if put into ReservationRequest, id should be empty
+/// if ListenResponse op is DELETE, onlu id will be populated
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Reservation {
+    /// unique id for the reservation
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
+    /// user if for the reservation
     #[prost(string, tag = "2")]
     pub user_id: ::prost::alloc::string::String,
+    /// used for differentation purpose
     #[prost(enumeration = "ReservationStatus", tag = "3")]
     pub status: i32,
     /// resource reservation window
@@ -18,6 +24,7 @@ pub struct Reservation {
     #[prost(string, tag = "7")]
     pub note: ::prost::alloc::string::String,
 }
+/// To make a reservation, send aReservationRequest
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReserveRequest {
@@ -78,9 +85,10 @@ pub struct GetResponse {
     #[prost(message, optional, tag = "1")]
     pub reservation: ::core::option::Option<Reservation>,
 }
+/// quert reservation with userid resource id, start time,end time ,and status
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryRequest {
+pub struct ReservationQuery {
     #[prost(string, tag = "1")]
     pub resource_id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -95,6 +103,12 @@ pub struct QueryRequest {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryRequest {
+    #[prost(message, optional, tag = "1")]
+    pub query: ::core::option::Option<ReservationQuery>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ListenRequest {}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -104,6 +118,7 @@ pub struct ListenResponse {
     #[prost(message, optional, tag = "2")]
     pub reservation: ::core::option::Option<Reservation>,
 }
+/// Reservation Status for a given time period
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ReservationStatus {
@@ -136,6 +151,7 @@ impl ReservationStatus {
         }
     }
 }
+/// when reservation is updated, record the update time
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ReservationUpdateType {
@@ -238,6 +254,7 @@ pub mod reservation_service_client {
             self.inner = self.inner.accept_compressed(encoding);
             self
         }
+        /// make a reservation
         pub async fn reserve(
             &mut self,
             request: impl tonic::IntoRequest<super::ReserveRequest>,
@@ -253,6 +270,7 @@ pub mod reservation_service_client {
                 http::uri::PathAndQuery::from_static("/reservation.ReservationService/reserve");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        /// confirm a pending reservation ,if reservation is not pending ,do nothing
         pub async fn confirm(
             &mut self,
             request: impl tonic::IntoRequest<super::ConfirmRequest>,
@@ -298,6 +316,7 @@ pub mod reservation_service_client {
                 http::uri::PathAndQuery::from_static("/reservation.ReservationService/cancel");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        /// get a reservation by id
         pub async fn get(
             &mut self,
             request: impl tonic::IntoRequest<super::GetRequest>,
@@ -358,10 +377,12 @@ pub mod reservation_service_server {
     /// Generated trait containing gRPC methods that should be implemented for use with ReservationServiceServer.
     #[async_trait]
     pub trait ReservationService: Send + Sync + 'static {
+        /// make a reservation
         async fn reserve(
             &self,
             request: tonic::Request<super::ReserveRequest>,
         ) -> Result<tonic::Response<super::ReserveResponse>, tonic::Status>;
+        /// confirm a pending reservation ,if reservation is not pending ,do nothing
         async fn confirm(
             &self,
             request: tonic::Request<super::ConfirmRequest>,
@@ -374,6 +395,7 @@ pub mod reservation_service_server {
             &self,
             request: tonic::Request<super::CancelRequest>,
         ) -> Result<tonic::Response<super::CancelResponse>, tonic::Status>;
+        /// get a reservation by id
         async fn get(
             &self,
             request: tonic::Request<super::GetRequest>,

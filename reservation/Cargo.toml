@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2021"
 license = "Unicode-DFS-2016"
 [dependencies]
+abi = { version = "0.1.0", path = "../abi" }
 sqlx = { version = "0.8.3", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+thiserror = "2.0.11"
