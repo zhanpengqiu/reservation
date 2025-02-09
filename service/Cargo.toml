@@ -3,4 +3,25 @@ name = "reservation-service"
 version = "0.1.0"
 edition = "2021"
 license = "Unicode-DFS-2016"
+
+[features]
+default = []
+test_utils = []
+
 [dependencies]
+abi = { version = "0.1.0", path = "../abi" }
+anyhow = "1.0.66"
+futures = { version = "0.3.25", default-features = false }
+reservation = { version = "0.1.0", path = "../reservation" }
+serde = { version = "1.0.147", features = ["derive"] }
+serde_yaml = "0.9.14"
+shellexpand = "2.1.2"
+tokio = { version = "1.21.2", features = ["full"] }
+tonic = { version = "0.8.2", features = ["tokio-rustls", "gzip"] }
+tracing = "0.1.37"
+
+[dev-dependencies]
+lazy_static = "1.4.0"
+rand = "0.8.5"
+sqlx = { version = "0.6.2", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+sqlx-db-tester = "0.1.1"
